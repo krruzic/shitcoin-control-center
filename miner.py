@@ -1,7 +1,6 @@
 import os
 import json
 import subprocess
-from pprint import pprint
 
 pool_list = []
 pool_item = {"pool_address" : "", "wallet_address" : "", "pool_password" : "x", "use_nicehash" : False, "use_tls" : False, "tls_fingerprint" : "", "pool_weight" : 10 }
@@ -30,13 +29,12 @@ if coin.upper() == "ADD":
         lines[-1] = lines[-1]+","
         f.seek(0)
         f.truncate()
-        print(lines)
         f.writelines(lines)
 else:
     coin = input("Enter the name of the coin: ")
 
 print("\n\n\nNow mining {}!".format(coin))
-filepath = "C:\\Users\\krruz\\Desktop\\CRYPTONOTE-COINS\\MINING\\XMR-STAK-RUNNER.bat"
+filepath = dir_path = os.path.dirname(os.path.realpath(__file__))+"\XMR-STAK-RUNNER.bat"
 print(filepath + " config.{}".format(coin))
 p = subprocess.Popen([filepath, "config.{}".format(coin)], shell=True, stdout = subprocess.PIPE)
 stdout, stderr = p.communicate()
