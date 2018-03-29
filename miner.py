@@ -5,6 +5,9 @@ import discord
 from discord.ext.commands import Bot, Context
 import glob
 import asyncio
+import requests
+from lxml import etree
+from bs4 import BeautifulSoup
 
 pool_item = {"pool_address" : "", "wallet_address" : "", "pool_password" : "x", "use_nicehash" : False, "use_tls" : False, "tls_fingerprint" : "", "pool_weight" : 1 }
 stakrunnerpath = os.path.dirname(os.path.realpath(__file__))+"\XMR-STAK-RUNNER.bat"
@@ -52,6 +55,21 @@ def to_shitty_json(coin, data):
         f.writelines(lines)
 
     return lines
+
+
+
+@client.command()
+async def hashrate():
+    r = requests.get("http://localhost:1237/h")
+    html_data = str(r.text).replace("'5'>H/s</td>", "'5'>H/s</th>")
+    soup = BeautifulSoup(html_data, "lxml")
+    table = soup.find('table')
+
+    rows = table.findAll('tr')[1:-1]
+    for row in rows:
+        columns = [data.text for data in row.findAll('td')[1:]]
+    
+    await client.say("Totals [10s, 60s, 15m]: {} **H/s**".format(columns))
 
 
 
@@ -129,6 +147,13 @@ async def m(coin_name):
 
     await client.say("Now mining {}!".format(coin_name))
     await client.say("{} was called.".format(p.args))
+
+
+@client.command()
+async def stopmining():
+    os.system("taskkill /im xmr-stak.exe")
+
+    await client.say("Mining stopped.")
 
 
 @client.command()
